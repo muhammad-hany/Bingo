@@ -72,16 +72,22 @@ public class Session {
     }
 
     private int getNextNumber() {
-        int i = callerArray.get(0);
-        callerArray.remove(0);
-        activeNumber=i;
+        int i;
+        if (callerArray.size()>0) {
+             i = callerArray.get(0);
+            callerArray.remove(0);
+            activeNumber = i;
+        }else {
+            stopSoundPool();
+            i=-1;
+        }
 
         return i;
     }
 
     private void startHandler() {
         handler = new Handler();
-        handler.postDelayed(voiceTask, 0);
+        handler.postDelayed(voiceTask, 1000);
     }
 
     Runnable voiceTask = new Runnable() {

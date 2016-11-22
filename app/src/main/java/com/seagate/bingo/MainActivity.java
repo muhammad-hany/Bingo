@@ -23,10 +23,14 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
             b22, b23, b24, b25, refresh;
     private Session session;
     private TextView fileNameText;
-    private Integer[] colNumbers;
+    private Integer[] colNumbers,allNumbers;
     private ArrayList<Cell> cells;
     private DBHelper helper;
     private AlertDialog alertDialog;
+    private GridView textGrid;
+    private GridAdapter mainAdapter;
+    private GridAdapter textAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        defineViews();
+        startSession();
         helper = new DBHelper(this);
 
 
@@ -42,11 +46,9 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
 
     private void defineViews() {
         fileNameText = (TextView) findViewById(R.id.filename);
-        startSession();
-
         GridView gridView = (GridView) findViewById(R.id.grid);
-        GridAdapter adapter = new GridAdapter(this, colNumbers);
-        gridView.setAdapter(adapter);
+        mainAdapter = new GridAdapter(this, colNumbers,R.layout.grid_item,REF.MAIN_GRID);
+        gridView.setAdapter(mainAdapter);
         gridView.setNumColumns(5);
         gridView.setHorizontalSpacing(GridView.STRETCH_SPACING_UNIFORM);
         gridView.setVerticalSpacing(GridView.STRETCH_SPACING_UNIFORM);
@@ -54,66 +56,55 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 LinearLayout button = (LinearLayout) view.findViewById(R.id.linear);
+                TextView textView= (TextView) view.findViewById(R.id.textView);
                 Cell cell = cells.get(GridAdapter.alterP(position));
-                cell.setItClicked(!cell.isItClicked());
-                if (cell.isItClicked()){
-                    button.setBackgroundColor(Color.RED);
-                }else {
-                    button.setBackgroundColor(Color.WHITE);
-                }
-                helper.updateCell(cell);
-                Log.v("tag", "value is" + cell.getValue() + " row id is " + cell.getCellId() + " column " + "number is " + cell.getCellColumn());
 
+                if (cell.isItCalled()) {
+                    cell.setItClicked(!cell.isItClicked());
+                    if (cell.isItClicked()) {
+                        button.setBackgroundColor(Color.RED);
+                        textView.setTextColor(Color.WHITE);
+                    } else {
+                        button.setBackgroundColor(Color.WHITE);
+                        textView.setTextColor(Color.BLACK);
+                    }
+                    helper.updateCell(cell);
+                }
+                Log.v("tag", "value is" + cell.getValue() + " row id is " + cell.getCellId() + " column " + "number is " + cell.getCellColumn());
             }
         });
 
-
+        textGrid = (GridView) findViewById(R.id.textGrid);
+        textAdapter =new GridAdapter(this,allNumbers,R.layout.text_frid_item,REF.TEXT_GRID);
+        textGrid.setAdapter(textAdapter);
+        textGrid.setHorizontalSpacing(GridView.STRETCH_SPACING_UNIFORM);
+        textGrid.setVerticalSpacing(GridView.STRETCH_SPACING_UNIFORM);
+        textGrid.setNumColumns(5);
 
         Button callForBingo = (Button) findViewById(R.id.call);
         callForBingo.setOnClickListener(this);
-
         dialogBuilder();
-
 
     }
 
     private void startSession() {
+
         session = new Session(this, this);
         cells = session.getCells();
         colNumbers = new Integer[25];
-
+        allNumbers=new Integer[75];
 
         int j = 0;
         for (Cell cell : cells) {
             colNumbers[j] = cell.getValue();
             j++;
         }
-        /*for (int i = 0; i < 25; i++) {
-            if (i < 5) {
-                //B
-                buttons[i].setText(String.valueOf(session.getBCol().get(j)));
-                colNumbers[i]=session.getBCol().get(j);
-            } else if (i >= 5 && i < 10) {
-                //i
-                buttons[i].setText(String.valueOf(session.getICol().get(j)));
-                colNumbers[i]=session.getICol().get(j);
 
-            } else if (i >= 10 && i < 15) {
-                //n
-                buttons[i].setText(String.valueOf(session.getNCol().get(j)));
-                colNumbers[i]=session.getNCol().get(j);
-            } else if (i >= 15 && i < 20) {
-                //g
-                buttons[i].setText(String.valueOf(session.getGCol().get(j)));
-                colNumbers[i]=session.getGCol().get(j);
-            } else if (i >= 20 && i < 25) {
-                //o
-                buttons[i].setText(String.valueOf(session.getOCol().get(j)));
-                colNumbers[i]=session.getOCol().get(j);
-            }
-            j++;
-            if (j > 5) j = 0;
-        }*/
+        for (int i=1;i<=75;i++){
+            allNumbers[i-1]=i;
+        }
+
+        defineViews();
     }
 
     @Override
@@ -129,9 +120,11 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
         // automatically handle clicks on the Home/Up textView, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.newGame) {
+            session.stopSoundPool();
+            startSession();
+
             return true;
         }
 
@@ -160,9 +153,13 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
                 cell.setItCalled(true);
                 break;
             }
-
-
         }
+        int index=GridAdapter.revertPForText(value-1);
+        LinearLayout layout= (LinearLayout) textGrid.getChildAt(index);
+        TextView textView= (TextView) layout.findViewById(R.id.textView);
+        layout.setBackgroundResource(android.R.color.holo_red_light);
+        textView.setTextColor(Color.WHITE);
+
     }
 
     @Override
@@ -178,4 +175,11 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
     }
 
 
+    public String[] getTextForAdapter() {
+        String[] textForAdapter=new String[75];
+        for (int i=1;i<=75;i++){
+            textForAdapter[i-1]=String.valueOf(GridAdapter.alterP(i));
+        }
+        return textForAdapter;
+    }
 }

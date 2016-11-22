@@ -26,4 +26,7 @@ public class REF {
     static final String ROW_3="row_3";
     static final String ROW_4="row_4";
     static final String ROW_5="row_5";
+
+    static final int MAIN_GRID=0;
+    static final int TEXT_GRID=1;
 }

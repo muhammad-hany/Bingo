@@ -90,13 +90,13 @@ public class DBHelper extends SQLiteOpenHelper {
                 cell=cells.get(GridAdapter.revertP(count));
                 if (entry == 0) {
                     break;
-                }else if (entry==1 && cell.isItCalled() && cell.isItClicked()){
+                }else if (entry==1 /*&& cell.isItCalled() && cell.isItClicked()*/){
                     rowValues.add(1);
-                    winnerCells.add(cell);
+                    /*winnerCells.add(cell);*/
                 }
                 count++;
             }
-            if (rowValues.size()==5 && winnerCells.size()==5){
+            if (rowValues.size()==5 /*&& winnerCells.size()==5*/){
                 return true;
             }
 
@@ -114,11 +114,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 cell=cells.get(count);
                 if (entry==0){
                     break;
-                }else if (entry==1 && cell.isItCalled() && cell.isItClicked()){
+                }else if (entry==1 /*&& cell.isItCalled() && cell.isItClicked()*/){
                     rowValues.add(1);
-                    winnerCells.add(cell);
+                    /*winnerCells.add(cell);*/
                 }
-                if (rowValues.size()==5 && winnerCells.size()==5){
+                if (rowValues.size()==5 /*&& winnerCells.size()==5*/){
                     return true;
                 }
                 count++;
