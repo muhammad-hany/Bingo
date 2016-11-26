@@ -1,14 +1,15 @@
 package com.seagate.bingo;
 
+
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -17,7 +18,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class GameActivity extends AppCompatActivity implements Session.SessionListener, View.OnClickListener {
+
+public class GameFragment extends Fragment implements View.OnClickListener, Session.SessionListener {
 
     private Session session;
     private TextView fileNameText;
@@ -28,23 +30,33 @@ public class GameActivity extends AppCompatActivity implements Session.SessionLi
     private GridView textGrid;
     private GridAdapter mainAdapter;
     private GridAdapter textAdapter;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        startSession();
-        helper = new DBHelper(this);
-
+    public GameFragment() {
+        // Required empty public constructor
     }
 
-    private void defineViews() {
-        fileNameText = (TextView) findViewById(R.id.filename);
-        GridView gridView = (GridView) findViewById(R.id.grid);
-        mainAdapter = new GridAdapter(this, colNumbers, R.layout.grid_item, REF.MAIN_GRID);
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        helper = new DBHelper(getContext());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view=inflater.inflate(R.layout.fragment_game, container, false);
+        startSession(view);
+        return view;
+    }
+
+
+
+    private void defineViews(View view) {
+        fileNameText = (TextView) view.findViewById(R.id.filename);
+        GridView gridView = (GridView) view.findViewById(R.id.grid);
+        mainAdapter = new GridAdapter(getContext(), colNumbers, R.layout.grid_item, REF.MAIN_GRID);
         gridView.setAdapter(mainAdapter);
         gridView.setNumColumns(5);
         gridView.setHorizontalSpacing(GridView.STRETCH_SPACING_UNIFORM);
@@ -71,22 +83,22 @@ public class GameActivity extends AppCompatActivity implements Session.SessionLi
             }
         });
 
-        textGrid = (GridView) findViewById(R.id.textGrid);
-        textAdapter = new GridAdapter(this, allNumbers, R.layout.text_frid_item, REF.TEXT_GRID);
+        textGrid = (GridView) view.findViewById(R.id.textGrid);
+        textAdapter = new GridAdapter(getContext(), allNumbers, R.layout.text_frid_item, REF.TEXT_GRID);
         textGrid.setAdapter(textAdapter);
         textGrid.setHorizontalSpacing(GridView.STRETCH_SPACING_UNIFORM);
         textGrid.setVerticalSpacing(GridView.STRETCH_SPACING_UNIFORM);
         textGrid.setNumColumns(5);
 
-        Button callForBingo = (Button) findViewById(R.id.call);
+        Button callForBingo = (Button) view.findViewById(R.id.call);
         callForBingo.setOnClickListener(this);
         dialogBuilder();
 
     }
 
-    private void startSession() {
+    private void startSession(View view) {
 
-        session = new Session(this, this);
+        session = new Session(getContext(), this);
         cells = session.getCells();
         colNumbers = new Integer[25];
         allNumbers = new Integer[75];
@@ -101,29 +113,7 @@ public class GameActivity extends AppCompatActivity implements Session.SessionLi
             allNumbers[i - 1] = i;
         }
 
-        defineViews();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.newGame:
-                session.stopSoundPool();
-                startSession();
-                fileNameText.setText("");
-                return true;
-
-
-        }
-        return super.onOptionsItemSelected(item);
+        defineViews(view);
     }
 
     @Override
@@ -157,14 +147,8 @@ public class GameActivity extends AppCompatActivity implements Session.SessionLi
     }
 
     private void dialogBuilder() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                 .setCancelable(true);
         alertDialog = builder.create();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        session.stopSoundPool();
     }
 }

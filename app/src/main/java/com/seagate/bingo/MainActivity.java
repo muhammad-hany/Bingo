@@ -1,35 +1,53 @@
 package com.seagate.bingo;
 
-import android.graphics.Color;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
-import android.widget.LinearLayout;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.GamesStatusCodes;
+import com.google.android.gms.games.multiplayer.Invitation;
+import com.google.android.gms.games.multiplayer.Multiplayer;
+import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
+import com.google.android.gms.games.multiplayer.Participant;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
+import com.google.android.gms.games.multiplayer.realtime.Room;
+import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
+import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
+import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements Session.SessionListener, View.OnClickListener {
-    private Button[] buttons;
-    private Button b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21,
-            b22, b23, b24, b25, refresh;
-    private Session session;
-    private TextView fileNameText;
-    private Integer[] colNumbers,allNumbers;
-    private ArrayList<Cell> cells;
-    private DBHelper helper;
-    private AlertDialog alertDialog;
-    private GridView textGrid;
-    private GridAdapter mainAdapter;
-    private GridAdapter textAdapter;
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, RoomUpdateListener, RealTimeMessageReceivedListener, RoomStatusUpdateListener, View.OnClickListener, OnInvitationReceivedListener {
+
+
+    private GoogleApiClient mGoogleApiClient;
+    private ProgressDialog progressDialog;
+    private String mRoomId,mMyId;
+    private  ArrayList<Participant> mParticipantId;
+    private EditText editText;
+    private TextView textView;
+    private Button button;
+    private int gamerType;
+
 
 
     @Override
@@ -38,81 +56,119 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        startSession();
-        helper = new DBHelper(this);
+        startGoogleApi();
+
+
+        /*editText= (EditText) findViewById(R.id.editText);
+        editText.setVisibility(View.INVISIBLE);
+        textView= (TextView) findViewById(R.id.t1);
+        textView.setVisibility(View.INVISIBLE);
+        button= (Button) findViewById(R.id.sendMsg);
+        button.setVisibility(View.INVISIBLE);
+        button.setOnClickListener(this);*/
 
 
     }
 
-    private void defineViews() {
-        fileNameText = (TextView) findViewById(R.id.filename);
-        GridView gridView = (GridView) findViewById(R.id.grid);
-        mainAdapter = new GridAdapter(this, colNumbers,R.layout.grid_item,REF.MAIN_GRID);
-        gridView.setAdapter(mainAdapter);
-        gridView.setNumColumns(5);
-        gridView.setHorizontalSpacing(GridView.STRETCH_SPACING_UNIFORM);
-        gridView.setVerticalSpacing(GridView.STRETCH_SPACING_UNIFORM);
-        gridView.setOnItemClickListener(new GridView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LinearLayout button = (LinearLayout) view.findViewById(R.id.linear);
-                TextView textView= (TextView) view.findViewById(R.id.textView);
-                Cell cell = cells.get(GridAdapter.alterP(position));
 
-                if (cell.isItCalled()) {
-                    cell.setItClicked(!cell.isItClicked());
-                    if (cell.isItClicked()) {
-                        button.setBackgroundColor(Color.RED);
-                        textView.setTextColor(Color.WHITE);
-                    } else {
-                        button.setBackgroundColor(Color.WHITE);
-                        textView.setTextColor(Color.BLACK);
-                    }
-                    helper.updateCell(cell);
-                }
-                Log.v("tag", "value is" + cell.getValue() + " row id is " + cell.getCellId() + " column " + "number is " + cell.getCellColumn());
-            }
-        });
 
-        textGrid = (GridView) findViewById(R.id.textGrid);
-        textAdapter =new GridAdapter(this,allNumbers,R.layout.text_frid_item,REF.TEXT_GRID);
-        textGrid.setAdapter(textAdapter);
-        textGrid.setHorizontalSpacing(GridView.STRETCH_SPACING_UNIFORM);
-        textGrid.setVerticalSpacing(GridView.STRETCH_SPACING_UNIFORM);
-        textGrid.setNumColumns(5);
+    /*void createRoom() {
+        Bundle bundle=RoomConfig.createAutoMatchCriteria(1,1,0);
 
-        Button callForBingo = (Button) findViewById(R.id.call);
-        callForBingo.setOnClickListener(this);
-        dialogBuilder();
+        RoomConfig.Builder configBuilder = RoomConfig.builder(this);
+        configBuilder.setMessageReceivedListener(this)
+                .setRoomStatusUpdateListener(this)
+                .setAutoMatchCriteria(bundle);
+        Games.RealTimeMultiplayer.create(mGoogleApiClient,configBuilder.build());
 
-    }
+        *//*Intent intent=Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient,1,3);
+        startActivityForResult(intent,1000);*//*
 
-    private void startSession() {
+    }*/
 
-        session = new Session(this, this);
-        cells = session.getCells();
-        colNumbers = new Integer[25];
-        allNumbers=new Integer[75];
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-        int j = 0;
-        for (Cell cell : cells) {
-            colNumbers[j] = cell.getValue();
-            j++;
-        }
-
-        for (int i=1;i<=75;i++){
-            allNumbers[i-1]=i;
-        }
-
-        defineViews();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected void onResume() {
+        super.onResume();
+        if (!mGoogleApiClient.isConnected()) mGoogleApiClient.connect();
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
+        switch (requestCode) {
+            case SELECT_OPP:
+                if (resultCode == RESULT_OK) {
+                    handleInvitation(data);
+                    gamerType=REF.GAME_HOST;
+                }
+                break;
+            case RECEIVE_INVITE:
+                if (data != null) {
+                    Bundle bundle = data.getExtras();
+                    if (resultCode == RESULT_OK) {
+                        if (bundle != null) {
+                            Invitation invitation = bundle.getParcelable(Multiplayer.EXTRA_INVITATION);
+                            if (invitation != null && invitation.getInvitationId() != null) {
+                                acceptInvitation(invitation.getInvitationId());
+                                gamerType=REF.GAME_GUEST;
+                            }
+                        }
+                    }
+                }
+                break;
+            case RC_WAITING_ROOM:
+                if (resultCode==RESULT_OK){
+                    //start Game
+                    Log.i("GAME","GAME STARTED");
+                    progressDialog.show();
+
+
+                }
+        }
+    }
+
+    private void handleInvitation(Intent data) {
+        ArrayList<String> invitess = data.getStringArrayListExtra(Games.EXTRA_PLAYER_IDS);
+        RoomConfig.Builder configBuilder = RoomConfig.builder(this);
+        configBuilder.setMessageReceivedListener(this)
+                .setRoomStatusUpdateListener(this)
+                .addPlayersToInvite(invitess);
+
+        int minPlayers = data.getIntExtra(Multiplayer.EXTRA_MIN_AUTOMATCH_PLAYERS, 0);
+        int maxPlayers = data.getIntExtra(Multiplayer.EXTRA_MAX_AUTOMATCH_PLAYERS, 0);
+        Bundle autoMatch = null;
+        if (minPlayers > 0 || maxPlayers > 0) {
+            autoMatch = RoomConfig.createAutoMatchCriteria(minPlayers, maxPlayers, 0);
+        }
+        if (autoMatch != null) {
+            configBuilder.setAutoMatchCriteria(autoMatch);
+        }
+        Games.RealTimeMultiplayer.create(mGoogleApiClient, configBuilder.build());
+
+
+    }
+
+    private void startGoogleApi() {
+        Games.GamesOptions.Builder options = Games.GamesOptions.builder().setShowConnectingPopup(true);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Games.API, options.build()).addScope(Games.SCOPE_GAMES)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -122,8 +178,7 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.newGame) {
-            session.stopSoundPool();
-            startSession();
+
 
             return true;
         }
@@ -131,55 +186,232 @@ public class MainActivity extends AppCompatActivity implements Session.SessionLi
         return super.onOptionsItemSelected(item);
     }
 
-    private void dialogBuilder() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setCancelable(true);
-        alertDialog=builder.create();
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Games.Invitations.registerInvitationListener(mGoogleApiClient, this);
+
+        /*if (bundle!=null){
+            Invitation invitation=bundle.getParcelable(Multiplayer.EXTRA_INVITATION);
+
+            if (invitation!=null && invitation.getInvitationId()!=null){
+                acceptInvitation(invitation.getInvitationId());
+            }
+        }*/
+    }
+
+    private void acceptInvitation(String invitationId) {
+        RoomConfig.Builder builder = RoomConfig.builder(this)
+                .setInvitationIdToAccept(invitationId)
+                .setMessageReceivedListener(this)
+                .setRoomStatusUpdateListener(this);
+        Games.RealTimeMultiplayer.join(mGoogleApiClient, builder.build());
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        session.stopSoundPool();
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
     }
 
     @Override
-    public void onPlaySound(String name, int value) {
-        StringBuilder builder = new StringBuilder(name);
-        builder.insert(1, " ");
-        fileNameText.setText(builder.toString().toUpperCase());
-        for (Cell cell : cells) {
-            if (cell.getValue() == (value)) {
-                cell.setItCalled(true);
-                break;
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        String msg = connectionResult.toString();
+        Log.i("GAME", "connection failed");
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this, 5555);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
             }
         }
-        int index=GridAdapter.revertPForText(value-1);
-        LinearLayout layout= (LinearLayout) textGrid.getChildAt(index);
-        TextView textView= (TextView) layout.findViewById(R.id.textView);
-        layout.setBackgroundResource(android.R.color.holo_red_light);
-        textView.setTextColor(Color.WHITE);
+    }
+
+    @Override
+    public void onRoomCreated(int i, Room room) {
+        if (i != GamesStatusCodes.STATUS_OK) {
+            //error
+        }
+
+        showWaitingRoom(room);
+    }
+
+    static final int RC_WAITING_ROOM = 2555;
+
+    private void showWaitingRoom(Room room) {
+        final int MIN_PLAYERS = Integer.MAX_VALUE;
+        Intent i = Games.RealTimeMultiplayer.getWaitingRoomIntent(mGoogleApiClient, room, MIN_PLAYERS);
+        startActivityForResult(i, RC_WAITING_ROOM);
+    }
+
+    @Override
+    public void onJoinedRoom(int i, Room room) {
+        progressDialog.show();
 
     }
+
+    @Override
+    public void onLeftRoom(int i, String s) {
+
+    }
+
+
+    @Override
+    public void onRoomConnected(int i, Room room) {
+        progressDialog.dismiss();
+        mRoomId=room.getRoomId();
+        mParticipantId=room.getParticipants();
+        Toast.makeText(this,"Game started",Toast.LENGTH_LONG).show();
+
+        editText.setVisibility(View.VISIBLE);
+        textView.setVisibility(View.VISIBLE);
+        button.setVisibility(View.VISIBLE);
+
+        startGameFragment();
+
+
+    }
+
+    @Override
+    public void onRealTimeMessageReceived(RealTimeMessage realTimeMessage) {
+        byte[] msg=realTimeMessage.getMessageData();
+        String text="";
+        try {
+            text = new String(msg, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        textView.setText(text);
+
+    }
+
+    @Override
+    public void onRoomConnecting(Room room) {
+
+    }
+
+    @Override
+    public void onRoomAutoMatching(Room room) {
+
+    }
+
+    @Override
+    public void onPeerInvitedToRoom(Room room, List<String> list) {
+
+    }
+
+    @Override
+    public void onPeerDeclined(Room room, List<String> list) {
+
+    }
+
+    @Override
+    public void onPeerJoined(Room room, List<String> list) {
+
+    }
+
+    @Override
+    public void onPeerLeft(Room room, List<String> list) {
+
+    }
+
+    @Override
+    public void onConnectedToRoom(Room room) {
+
+    }
+
+    @Override
+    public void onDisconnectedFromRoom(Room room) {
+
+    }
+
+    @Override
+    public void onPeersConnected(Room room, List<String> list) {
+
+    }
+
+    @Override
+    public void onPeersDisconnected(Room room, List<String> list) {
+
+    }
+
+    @Override
+    public void onP2PConnected(String s) {
+
+    }
+
+    @Override
+    public void onP2PDisconnected(String s) {
+
+    }
+
+    private static final int SELECT_OPP = 1000;
+    private static final int RECEIVE_INVITE = 2000;
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.call:
-                if (helper.fetchForWinner(cells)) {
-                    alertDialog.setMessage("you have won !!!!");
-                    alertDialog.show();
-                    session.stopSoundPool();
+
+            //new Game
+            case R.id.send:
+                // send invitation
+                if (!mGoogleApiClient.isConnected()) {
+                    mGoogleApiClient.connect();
+                }
+                Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent
+                        (mGoogleApiClient, 1, 1);
+                startActivityForResult(intent, SELECT_OPP);
+                break;
+            case R.id.show:
+                if (!mGoogleApiClient.isConnected()) {
+
+                }
+                Intent intent1 = Games.Invitations.getInvitationInboxIntent(mGoogleApiClient);
+                startActivityForResult(intent1, RECEIVE_INVITE);
+                break;
+            case R.id.quick:
+                /*startQuickPlay();*/
+                startGameFragment();
+                break;
+            case R.id.sendMsg:
+                byte[] msg=editText.getText().toString().getBytes();
+                if (msg.length!=0) {
+                    Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, msg,
+                            mRoomId);
                 }
         }
     }
 
 
-    public String[] getTextForAdapter() {
-        String[] textForAdapter=new String[75];
-        for (int i=1;i<=75;i++){
-            textForAdapter[i-1]=String.valueOf(GridAdapter.alterP(i));
-        }
-        return textForAdapter;
+
+    private void startGameFragment(){
+        FragmentTransaction transaction=getSupportFragmentManager().beginTransaction();
+        GameFragment gameFragment=new GameFragment();
+        Bundle bundle=new Bundle();
+        bundle.putInt(REF.GAMER_TYPE_KEY,gamerType);
+        gameFragment.setArguments(bundle);
+        transaction.add(R.id.content_mainm,gameFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private void startQuickPlay() {
+        final int MIN_OPPONENTS = 1, MAX_OPPONENTS = 1;
+        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS,
+                MAX_OPPONENTS, 0);
+        RoomConfig.Builder rtmConfigBuilder = RoomConfig.builder(this);
+        rtmConfigBuilder.setMessageReceivedListener(this);
+        rtmConfigBuilder.setRoomStatusUpdateListener(this);
+        rtmConfigBuilder.setAutoMatchCriteria(autoMatchCriteria);
+        Games.RealTimeMultiplayer.create(mGoogleApiClient, rtmConfigBuilder.build());
+    }
+
+    @Override
+    public void onInvitationReceived(Invitation invitation) {
+        Intent intent1 = Games.Invitations.getInvitationInboxIntent(mGoogleApiClient);
+        startActivityForResult(intent1, RECEIVE_INVITE);
+    }
+
+    @Override
+    public void onInvitationRemoved(String s) {
+
     }
 }

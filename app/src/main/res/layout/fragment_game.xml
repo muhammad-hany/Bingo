@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     android:id="@+id/content_main"
+    android:background="@android:color/white"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,216 +8,214 @@
     android:layout_height="match_parent"
     android:clickable="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.seagate.bingo.GameActivity"
-    tools:showIn="@layout/activity_game">
-
-
-
-
+    tools:context="com.seagate.bingo.GameFragment">
 
     <TextView
+
+        android:id="@+id/filename"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/filename"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        tools:text="text"
         android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="text"/>
 
     <Button
-        android:text="Call bingo !"
+        android:id="@+id/call"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/call"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="Call bingo !"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 
     <android.support.v7.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="10dp"
+        app:cardBackgroundColor="#dfdfdf"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
-        app:cardBackgroundColor="#dfdfdf"
-        android:layout_width="100dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:id="@+id/cardView"
-        app:layout_constraintVertical_bias="0.49"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/call"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="10dp">
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.49">
 
         <GridView
-            android:orientation="vertical"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            app:layout_constraintTop_toBottomOf="@+id/textContainer"
-            app:layout_constraintRight_toRightOf="parent"
             android:id="@+id/textGrid"
-            app:layout_constraintBottom_toTopOf="@+id/call"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:layout_width="match_parent">
+            android:layout_marginTop="25dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/call"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textContainer">
         </GridView>
 
         <LinearLayout
-            app:layout_constraintLeft_toLeftOf="@+id/textGrid"
             android:id="@+id/textContainer2"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/textGrid"
             android:layout_marginBottom="4dp"
-            android:layout_marginTop="6dp">
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/textGrid"
+            app:layout_constraintLeft_toLeftOf="@+id/textGrid"
+            app:layout_constraintRight_toRightOf="parent">
 
             <TextView
-                android:textSize="10sp"
+                android:id="@+id/textVi45ew5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="B"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textVi45ew5"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textSize="10sp"/>
 
             <TextView
-                android:textSize="10sp"
+                android:id="@+id/textV345iew4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="I"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textV345iew4"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textSize="10sp"/>
 
             <TextView
-                android:textSize="10sp"
+                android:id="@+id/text54View3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="N"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/text54View3"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textSize="10sp"/>
 
             <TextView
-                android:textSize="10sp"
+                android:id="@+id/textV65iew2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="G"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textV65iew2"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textSize="10sp"/>
 
             <TextView
-                android:textSize="10sp"
-                android:gravity="center"
-                android:text="O"
+                android:id="@+id/textVi76ew"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/textVi76ew"
                 android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+                android:gravity="center"
+                android:text="O"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textSize="10sp"/>
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
 
 
     <android.support.v7.widget.CardView
-        app:cardBackgroundColor="#f7f7f7"
-        app:cardCornerRadius="10dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/call"
         android:layout_marginBottom="8dp"
-        app:layout_constraintVertical_bias="0.47000003"
-        app:layout_constraintRight_toLeftOf="@+id/cardView"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="10dp"
-        app:layout_constraintLeft_toLeftOf="parent">
+        android:layout_marginTop="16dp"
+        app:cardBackgroundColor="#f7f7f7"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/call"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/cardView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.47000003">
+
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
                 android:id="@+id/textContainer"
-                android:orientation="horizontal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent"
+                android:orientation="horizontal"
+                app:layout_constraintLeft_toLeftOf="@+id/grid"
                 app:layout_constraintRight_toRightOf="@+id/grid"
-                app:layout_constraintLeft_toLeftOf="@+id/grid">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:text="B"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textView5"
-                    android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
                 <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:text="I"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textView4"
-                    android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
                 <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:text="N"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textView3"
-                    android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
                 <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:text="G"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/textView2"
-                    android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
                 <TextView
-                    android:gravity="center"
-                    android:text="O"
+                    android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/textView"
                     android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="O"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
             </LinearLayout>
 
             <GridView
-                app:layout_constraintTop_toBottomOf="@+id/textContainer"
                 android:id="@+id/grid"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="8dp"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginEnd="8dp"/>
+                app:layout_constraintTop_toBottomOf="@+id/textContainer"/>
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>
