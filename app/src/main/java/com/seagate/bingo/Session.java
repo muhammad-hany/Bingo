@@ -25,9 +25,25 @@ public class Session {
     private SessionListener listener;
     private ArrayList<Cell> cells;
     private int activeNumber;
+    private ArrayList<Integer> arrayLists;
+
+    public Session(Context context, SessionListener listener, ArrayList<Integer> values) {
+        // guest
+        mContext = context;
+        this.listener = listener;
+        cells = new ArrayList<>();
+        createSoundPool();
+        makeBingoLimits();
+        generateColNumbers();
+        callerArray=values;
+
+
+    }
+
 
     public Session(Context context, SessionListener listener) {
 
+        //host
         mContext = context;
         this.listener = listener;
         cells = new ArrayList<>();
@@ -35,13 +51,14 @@ public class Session {
         makeBingoLimits();
         generateColNumbers();
         createArray();
+    }
+
+    public void startGameVoices() {
         startHandler();
-
-
     }
 
     public interface SessionListener {
-         void onPlaySound(String name,int value);
+        void onPlaySound(String name, int value);
     }
 
     private void createSoundPool() {
@@ -71,15 +88,19 @@ public class Session {
 
     }
 
+    public ArrayList<Integer> getCalledArray(){
+        return callerArray;
+    }
+
     private int getNextNumber() {
         int i;
-        if (callerArray.size()>0) {
-             i = callerArray.get(0);
+        if (callerArray.size() > 0) {
+            i = callerArray.get(0);
             callerArray.remove(0);
             activeNumber = i;
-        }else {
+        } else {
             stopSoundPool();
-            i=-1;
+            i = -1;
         }
 
         return i;
@@ -105,7 +126,7 @@ public class Session {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
                 soundPool.play(sampleId, 1, 1, 1, 0, 1);
-                listener.onPlaySound(filename ,activeNumber);
+                listener.onPlaySound(filename, activeNumber);
             }
         });
     }
@@ -117,7 +138,7 @@ public class Session {
         return -1;
     }
 
-    private void generateColNumbers() {
+    public ArrayList<Integer> createGameList() {
         bCol = bLimit;
         iCol = iLimit;
         nCol = nLimit;
@@ -136,13 +157,47 @@ public class Session {
             gCol.remove(i);
             oCol.remove(i);
         }
-        ArrayList<ArrayList<Integer>> arrayLists = new ArrayList<>();
-        arrayLists.add(bCol);
-        arrayLists.add(iCol);
-        arrayLists.add(nCol);
-        arrayLists.add(gCol);
-        arrayLists.add(oCol);
-        int j = 1;
+        arrayLists = new ArrayList<>();
+        arrayLists.addAll(bCol);
+        arrayLists.addAll(iCol);
+        arrayLists.addAll(nCol);
+        arrayLists.addAll(gCol);
+        arrayLists.addAll(oCol);
+
+        return arrayLists;
+    }
+
+    public ArrayList<Integer> getListValues(){
+        return arrayLists;
+    }
+
+    private void generateColNumbers() {
+
+        bCol = bLimit;
+        iCol = iLimit;
+        nCol = nLimit;
+        gCol = gLimit;
+        oCol = oLimit;
+        Collections.shuffle(bCol);
+        Collections.shuffle(iCol);
+        Collections.shuffle(nCol);
+        Collections.shuffle(gCol);
+        Collections.shuffle(oCol);
+
+        for (int i = bLimit.size() - 1; i >= 5; i--) {
+            bCol.remove(i);
+            iCol.remove(i);
+            nCol.remove(i);
+            gCol.remove(i);
+            oCol.remove(i);
+        }
+        arrayLists = new ArrayList<>();
+        arrayLists.addAll(bCol);
+        arrayLists.addAll(iCol);
+        arrayLists.addAll(nCol);
+        arrayLists.addAll(gCol);
+        arrayLists.addAll(oCol);
+        /*int j = 1;
         for (ArrayList<Integer> list : arrayLists) {
             int count = 1;
             for (Integer i : list) {
@@ -151,6 +206,23 @@ public class Session {
                 cells.add(cell);
             }
             j++;
+        }*/
+        makeGameCells(arrayLists);
+
+
+    }
+
+    private void makeGameCells(ArrayList<Integer> arrayLists) {
+        int row = 1;
+        int column = 1;
+        for (Integer n : arrayLists) {
+            if (row > 5) {
+                row = 1;
+                column++;
+            }
+            Cell cell = new Cell(row, column, n, false, false);
+            cells.add(cell);
+            row++;
         }
     }
 

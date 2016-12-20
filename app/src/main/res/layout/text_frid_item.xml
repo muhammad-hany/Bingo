@@ -12,7 +12,7 @@
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/textView"
+        android:id="@+id/questionBody"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="10sp"/>
 

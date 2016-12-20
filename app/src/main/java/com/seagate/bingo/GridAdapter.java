@@ -35,7 +35,7 @@ public class GridAdapter extends ArrayAdapter<Integer> {
                     .LAYOUT_INFLATER_SERVICE);
             convertView=inflater.inflate(resourceId,null,false);
             holder=new ViewHolder();
-            holder.textView = (TextView) convertView.findViewById(R.id.textView);
+            holder.textView = (TextView) convertView.findViewById(R.id.questionBody);
             convertView.setTag(holder);
         }else {
             holder= (ViewHolder) convertView.getTag();
